@@ -45,6 +45,12 @@ class Typekitty {
 					'name'=>'kitId',
 					'label'=>'Kit ID',
 					'type'=>'text'
+				),
+				array(
+					'name'=>'async',
+					'label'=>'Asynchronous',
+					'type'=>'checkbox',
+					'help'=>'Load the script asynchronously.'
 				)
 			)
 		)
@@ -123,10 +129,24 @@ class Typekitty {
 
 		$options = $this->options;
 		
-		printf(
-			'<input id="' . $args['name'] . '" class="regular-text" type="' . $args['type'] . '" name="' . $this->pluginSlug . '[' . $args['name'] . ']" value="%s" />',
-			isset( $options[ $args['name'] ] ) ? esc_attr( $options[ $args['name'] ]) : ''
-		);
+		if ( strtolower( $args['type'] ) == 'checkbox' ) {
+			
+			$output = '<label><input id="' . $args['name'] . '" type="' . $args['type'] . '" name="' . $this->pluginSlug . '[' . $args['name'] . ']" value="1"';
+			if ( $options[ $args['name'] ] == 1 ) {
+				$output .= ' checked="checked" ';
+			}
+			$output .= '/>' . $args['help'] . '</label>';
+			
+			echo $output;
+		
+		} else {
+		
+			printf(
+				'<input id="' . $args['name'] . '" class="regular-text" type="' . $args['type'] . '" name="' . $this->pluginSlug . '[' . $args['name'] . ']" value="%s" />',
+				isset( $options[ $args['name'] ] ) ? esc_attr( $options[ $args['name'] ]) : ''
+			);
+		
+		}
 
 		return;
 	}
@@ -134,8 +154,14 @@ class Typekitty {
 	public function hook_javascript() {
 		
 		$options = $this->options;
+		
+		if ( $options['async'] == 1 ) {
 	
-		$output = '<script>(function(d) { var config = {  kitId: "' . $options['kitId'] . '", scriptTimeout: 3000 }, h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src="//use.typekit.net/"+config.kitId+".js";tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s) })(document);</script>';
+			$output = '<script>(function(d) { var config = {  kitId: "' . $options['kitId'] . '", scriptTimeout: 3000 }, h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src="//use.typekit.net/"+config.kitId+".js";tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s) })(document);</script>';
+		
+		} else {
+			$output = '<script src="//use.typekit.net/' . $options['kitId'] . '.js"></script><script>try{Typekit.load();}catch(e){}</script>';
+		}
 		
 		echo $output;
 	}
