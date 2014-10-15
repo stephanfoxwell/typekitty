@@ -16,13 +16,15 @@ class Typekitty {
 	 */
 	public $options;
 	
+	public $pluginName = 'Typekitty';
+	public $pluginSlug = 'typekitty';
+	
 
-	public function __construct()
-	{
+	public function __construct() {
 		
 		
 		// Set class property
-		$this->options = get_option( 'typekitty' );
+		$this->options = get_option( $this->pluginSlug );
 		
 		add_action( 'wp_head', array( $this, 'hook_javascript' ) );
 		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
@@ -35,13 +37,14 @@ class Typekitty {
 	}
 
 
-	public $typekitty_sections = array(
+	public $sections = array(
 		array(
-			'id'=>'typekitty_general',
+			'id' => 'general',
 			'fields' => array(
 				array(
 					'name'=>'kitId',
-					'label'=>'Kit ID'
+					'label'=>'Kit ID',
+					'type'=>'text'
 				)
 			)
 		)
@@ -49,10 +52,10 @@ class Typekitty {
 
 	public function add_plugin_page() {
 		add_options_page(
-			'Typekitty',
-			'Typekitty',
+			$this->pluginName,
+			$this->pluginName,
 			'manage_options',
-			'typekitty',
+			$this->pluginSlug,
 			array( $this, 'create_admin_page' )
 		);
 	}
@@ -65,12 +68,12 @@ class Typekitty {
 
 		?>
 		<div class="wrap">
-			<h2>Typekitty</h2>
+			<h2><?php echo $this->pluginName; ?></h2>
 			<form method="post" action="options.php">
 				<?php
 					// This prints out all hidden setting fields
-					settings_fields( 'typekitty_group' );
-					do_settings_sections( 'typekitty' );
+					settings_fields( $this->pluginSlug . '_group' );
+					do_settings_sections( $this->pluginSlug );
 					submit_button();
 				?>
 			</form>
@@ -80,11 +83,11 @@ class Typekitty {
 
 	public function page_init() {
 		register_setting(
-			'typekitty_group', // Option group
-			'typekitty' // Option name
+			$this->pluginSlug . '_group', // Option group
+			$this->pluginSlug // Option name
 		);
 
-		foreach ( $this->typekitty_sections as $section ) {
+		foreach ( $this->sections as $section ) {
 			add_settings_section(
 				$section['id'], // ID
 				$section['label'], // Title
@@ -96,17 +99,17 @@ class Typekitty {
 
 	public function print_section_info( $arg ) {
 
-		foreach ( $this->typekitty_sections as $typekitty_section ) {
+		foreach ( $this->sections as $section ) {
 
-			if ( $typekitty_section['id'] == $arg['id'] ) {
+			if ( $section['id'] == $arg['id'] ) {
 
-				foreach ( $typekitty_section['fields'] as $field ) {
+				foreach ( $section['fields'] as $field ) {
 					add_settings_field(
 						$field['name'],
 						$field['label'],
 						array( $this, 'print_field' ),
-						'typekitty',
-						$typekitty_section['id'],
+						$this->pluginSlug,
+						$section['id'],
 						$field
 					);
 				}
@@ -119,9 +122,9 @@ class Typekitty {
 	public function print_field( $args ) {
 
 		$options = $this->options;
-
+		
 		printf(
-			'<input id="' . $args['name'] . '" class="regular-text" type="text" name="typekitty[' . $args['name'] . ']" value="%s" />',
+			'<input id="' . $args['name'] . '" class="regular-text" type="' . $args['type'] . '" name="' . $this->pluginSlug . '[' . $args['name'] . ']" value="%s" />',
 			isset( $options[ $args['name'] ] ) ? esc_attr( $options[ $args['name'] ]) : ''
 		);
 
