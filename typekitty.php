@@ -92,7 +92,7 @@ class Typekitty {
 				$section['id'], // ID
 				$section['label'], // Title
 				array( $this, 'print_section_info' ), // Callback
-				'typekitty' // Page
+				$this->pluginSlug // Page
 			);
 		}
 	}
