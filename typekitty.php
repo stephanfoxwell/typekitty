@@ -145,7 +145,7 @@ class Typekitty {
 		return;
 	}
 	
-	public function hook_javascript() {
+	public function hook_stylesheet() {
 		
 		$options = $this->options;
 		
