@@ -26,7 +26,7 @@ class Typekitty {
 		// Set class property
 		$this->options = get_option( $this->pluginSlug );
 		
-		add_action( 'wp_head', array( $this, 'hook_javascript' ) );
+		add_action( 'wp_head', array( $this, 'hook_stylesheet' ) );
 		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
 		add_action( 'admin_init', array( $this, 'page_init' ) );
 	}
@@ -45,12 +45,6 @@ class Typekitty {
 					'name'=>'kitId',
 					'label'=>'Kit ID',
 					'type'=>'text'
-				),
-				array(
-					'name'=>'async',
-					'label'=>'Asynchronous',
-					'type'=>'checkbox',
-					'help'=>'Load the script asynchronously.'
 				)
 			)
 		)
@@ -155,13 +149,7 @@ class Typekitty {
 		
 		$options = $this->options;
 		
-		if ( $options['async'] == 1 ) {
-	
-			$output = '<script>(function(d) { var config = {  kitId: "' . $options['kitId'] . '", scriptTimeout: 3000 }, h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src="//use.typekit.net/"+config.kitId+".js";tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s) })(document);</script>';
-		
-		} else {
-			$output = '<script src="//use.typekit.net/' . $options['kitId'] . '.js"></script><script>try{Typekit.load();}catch(e){}</script>';
-		}
+		$output = '<link rel="stylesheet" href="https://use.typekit.net/' . $options['kitId'] . '.css">';
 		
 		echo $output;
 	}
